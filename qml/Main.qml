@@ -11,15 +11,20 @@ App {
     //licenseKey: "<generate one from https://felgo.com/licenseKey>"
 
     NavigationStack {
-
         Page {
+            useSafeArea: true
             title: qsTr("Messenger")
             backgroundColor: "white"
             AppListView{
                 property int m_margin: 10
                 id:idListView
                 spacing: dp(m_margin)
-                anchors.fill: parent
+                anchors{
+                    left:parent.left
+                    right:parent.right
+                    bottom:idTextFieldRect.top
+                    top:parent.top
+                }
                 anchors.topMargin: 10
                 model: m_messageListModel
                 scrollIndicatorVisible: false
@@ -28,10 +33,10 @@ App {
                     anchors.left: model.ownMessage === false ? parent.left : undefined;
                     anchors.rightMargin: model.ownMessage === true ? dp(idListView.m_margin) : undefined;
                     anchors.leftMargin: model.ownMessage === false ? dp(idListView.m_margin) : undefined;
-                    width: childrenRect.width+dp(10)
-                    height: childrenRect.height+dp(10)
+                    width: idText.width+dp(10)
+                    height: idText.height+dp(10)
                     color: model.ownMessage ? "deepskyblue" : "#E9E9EB"
-                    radius:17
+                    radius:14
                     Text{
                         id:idText
                         text:model.text
@@ -44,9 +49,104 @@ App {
 
                 }
                 onCountChanged: {
-                    var newIndex = count - 1 // last index
-                    positionViewAtEnd()
-                    currentIndex = newIndex
+                    var newIndex = count - 1; // last index
+                    positionViewAtEnd();
+                    currentIndex = newIndex;
+                }
+            }
+            Rectangle{
+                id:idTextFieldRect
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                color:"darkgray"
+                height: Theme.isAndroid ? Theme.statusBarHeight + dp(60) : dp(50)
+                Rectangle{
+                    height:dp(50)
+                    color:"darkgray"
+                    anchors{
+                        bottom:parent.bottom
+                        bottomMargin: Theme.isAndroid ? Theme.statusBarHeight + dp(10) : 0
+                        left:parent.left
+                        right:parent.right
+                    }
+
+
+                    Rectangle{
+                        anchors{
+                            left:parent.left
+                            right: idSendButtonRect.left
+                            bottom: parent.bottom
+                            top:parent.top
+                        }
+                        color: "transparent"
+                        Rectangle{
+                            anchors{
+                                left:parent.left
+                                right: parent.right
+                                bottom: parent.bottom
+                                top:parent.top
+                            }
+                            color: "transparent"
+                            AppTextField{
+                                z:99
+                                id:idTextField
+                                anchors.fill:parent
+                                anchors.leftMargin: dp(15)
+                                backgroundColor: "transparent"
+                                underlineColor: "transparent"
+                            }
+                            Rectangle{
+                                anchors.margins: dp(5)
+                                color:"white"
+                                radius: dp(50)
+                                anchors.fill: parent
+                            }
+                        }
+
+                    }
+                    Rectangle{
+                        id:idSendButtonRect
+                        width:height
+                        radius: width*0.5
+                        color:"white"
+                        anchors{
+                            margins: dp(5)
+                            right:parent.right
+                            top:parent.top
+                            bottom:parent.bottom
+                        }
+                        MouseArea{
+                            z:100
+                            anchors.fill: parent
+                            onClicked: {
+                                if(idTextField.text != ""){
+                                    m_messageListModel.appendLine(idTextField.text,true);
+                                    m_simpleTcpServer.writeMessage(idTextField.text);
+                                    idTextField.text = "";
+                                }
+                            }
+                        }
+
+                        Rectangle{
+                            color:"darkgray"
+                            radius: width*0.5
+                            anchors.left:parent.left
+                            anchors.right: parent.right
+                            anchors.margins:dp(9)
+                            height:dp(5)
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Rectangle{
+                            color:"darkgray"
+                            radius: width*0.5
+                            anchors.top:parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.margins:dp(9)
+                            width:dp(5)
+                            anchors.horizontalCenter: parent.horizontalCenter
+                        }
+                    }
                 }
             }
 

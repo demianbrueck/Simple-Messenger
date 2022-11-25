@@ -1,12 +1,15 @@
 #include "messagelistviewmodel.h"
 #include <QDebug>
+#include <simpletcpserver.h>
 
 
 CMessageListViewModel::CMessageListViewModel()
 {
     //m_LastActivePlayRowIdx = 0;
     m_iLastIndex = -1;
+    CSimpleTcpServer *m_pSimpleTcpServer = new CSimpleTcpServer();
 
+    connect(m_pSimpleTcpServer, SIGNAL(sigNewMessage(QString)), this, SLOT(slotNewMessage(QString)));
 }
 
 QVariant CMessageListViewModel::data(const QModelIndex &index, int role) const{
@@ -131,6 +134,17 @@ void CMessageListViewModel::slotUpdateList()
     endResetModel();
 }
 
+void CMessageListViewModel::slotNewMessage(QString sMessage)
+{
+    qDebug() << sMessage;
+    beginResetModel();
+    Data newData;
+    newData.ownMessage = false;
+    newData.text = sMessage;
+    m_data.append(newData);
+    endResetModel();
+}
+
 /* From QML */
 void CMessageListViewModel::onIndexChanged(int index){
 
@@ -164,6 +178,7 @@ void CMessageListViewModel::appendLine(QString text, bool ownMessage)
     newData.ownMessage = ownMessage;
     m_data.append(newData);
     endResetModel();
+    qDebug() << "appending";
 }
 
 /* QML property callbacks */

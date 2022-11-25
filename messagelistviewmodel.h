@@ -68,10 +68,13 @@ signals:
     void sigOnMouseOver(int index);
     void signalScrollPosChanged();
 
+
+
 public slots:
     void slotOnListChanged(QStringList l1, QStringList l2);
     void slotSelectEntryByEntry(QString entry);
     void slotUpdateList();
+    void slotNewMessage(QString sMessage);
 
 };
 

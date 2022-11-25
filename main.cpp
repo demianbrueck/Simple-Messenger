@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <FelgoApplication>
 #include <messagelistviewmodel.h>
+#include <simpletcpserver.h>
 #include <QQmlContext>
 
 #include <QQmlApplicationEngine>
@@ -26,7 +27,11 @@ int main(int argc, char *argv[])
     felgo.setLicenseKey(PRODUCT_LICENSE_KEY);
 
     CMessageListViewModel messageListViewModel;
+    CSimpleTcpServer simpleTcpServer;
+
     engine.rootContext()->setContextProperty("m_messageListModel", &messageListViewModel);
+    engine.rootContext()->setContextProperty("m_simpleTcpServer", &simpleTcpServer);
+
 
     // use this during development
     // for PUBLISHING, use the entry point below
